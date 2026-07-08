@@ -131,13 +131,29 @@
   tbody tr:last-child td { border-bottom: none; }
   tbody tr:hover td { background: var(--card-hi); }
   td.pos { text-align: left; color: var(--faint); width: 44px; }
-  td.player { text-align: left; font-size: 15.5px; font-weight: 700; letter-spacing: -0.01em; }
+  td.player { text-align: left; }
+  .player-cell { display: flex; align-items: center; gap: 13px; }
+  .op-avatar {
+    width: 44px; height: 44px; flex: none;
+    border-radius: 11px; padding: 4px;
+    background: radial-gradient(circle at 50% 35%, #f4f6f9, #dfe3ea);
+    border: 1px solid var(--line);
+    object-fit: contain;
+  }
+  .player-name {
+    display: flex; flex-direction: column; gap: 1px;
+    font-size: 15.5px; font-weight: 700; letter-spacing: -0.01em;
+  }
+  .player-op {
+    font-size: 11.5px; font-weight: 500; letter-spacing: 0.01em;
+    color: var(--faint);
+  }
   .plat-chip {
-    display: inline-block; margin-left: 8px; padding: 2px 8px;
-    font-size: 10.5px; font-weight: 600; letter-spacing: 0.08em;
+    display: inline-block; margin-left: 8px; padding: 1px 7px;
+    font-size: 10px; font-weight: 600; letter-spacing: 0.08em;
     color: var(--muted); background: var(--card-hi);
     border: 1px solid var(--line); border-radius: 999px;
-    vertical-align: 2px;
+    vertical-align: 1px;
   }
   .rank-pill {
     display: inline-flex; align-items: center; gap: 8px;
@@ -250,6 +266,19 @@ const PLAYERS = [
     overall: { level: 76, hours: 87, matches: 242, wins: 92, losses: 136, winrate: 38.0, kd: 0.25, hs: 30.9, kills: 286, deaths: 1125, kpm: 1.18, abandons: 14 } },
 ];
 // ─────────────────────────────────────────────────────────────────────
+
+// Each player's signature operator (avatar shown by their name).
+// Kept separate from PLAYERS so the daily stat-refresh never touches it.
+const OPERATORS = {
+  "Prawn1234": "frost",
+  "preludexx": "valkyrie",
+  "bennyxswish": "warden",
+  "GymPiggy": "mute",
+  "Abinboi": "finka",
+  "cancerous_CURRY": "thorn",
+  "MegaGBez": "montagne",
+};
+const opLabel = op => op ? op.charAt(0).toUpperCase() + op.slice(1) : "";
 
 const TIER_COLORS = {
   copper: "var(--copper)", bronze: "var(--bronze)", silver: "var(--silver)",
@@ -401,7 +430,15 @@ function render() {
     posTd.className = "pos"; posTd.textContent = String(i + 1).padStart(2, "0");
     const nameTd = document.createElement("td");
     nameTd.className = "player";
-    nameTd.innerHTML = p.name + '<span class="plat-chip">' + p.plat + "</span>";
+    const op = OPERATORS[p.name];
+    nameTd.innerHTML =
+      '<div class="player-cell">' +
+        (op ? '<img class="op-avatar" src="ops/' + op + '.svg" alt="' + opLabel(op) + '" title="' + opLabel(op) + '" loading="lazy">' : "") +
+        '<span class="player-name">' +
+          '<span>' + p.name + '<span class="plat-chip">' + p.plat + "</span></span>" +
+          '<span class="player-op">' + opLabel(op) + "</span>" +
+        "</span>" +
+      "</div>";
     tr.append(posTd, nameTd);
     cfg.cols.forEach(c => {
       const td = document.createElement("td");

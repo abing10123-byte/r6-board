@@ -1,29 +1,24 @@
 <title>R6 Squad Leaderboard</title>
 <style>
   :root {
-    --bg: #0b0f15;
-    --bg-raise: #10151e;
-    --panel: #151c27;
-    --panel-hi: #1b2431;
-    --line: #232e3e;
-    --text: #e6ebf2;
-    --muted: #93a0b4;
-    --faint: #5c6a7e;
-    --accent: #f18f2c;
-    --accent-dim: #b96c1e;
-    --gold: #e7b93c;
-    --emerald: #3ecf8e;
-    --diamond: #a98ff7;
-    --champion: #e5484d;
-    --plat: #35c2c9;
-    --silver: #aab4c0;
-    --bronze: #c9885a;
-    --copper: #9a5b46;
-    --display: "Avenir Next Condensed", "Arial Narrow", "Helvetica Neue", sans-serif;
-    --body: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-    --mono: ui-monospace, "SF Mono", "Cascadia Mono", Menlo, monospace;
+    --bg: #15171c;
+    --card: #1d2026;
+    --card-hi: #23262e;
+    --line: #2b2f38;
+    --text: #eef0f3;
+    --muted: #9ba3af;
+    --faint: #6d7480;
+    --accent: #f2c14e;
+    --gold: #f2c14e;
+    --emerald: #4ade80;
+    --diamond: #b197fc;
+    --champion: #f4626a;
+    --plat: #4fd1d9;
+    --silver: #b8c0cc;
+    --bronze: #cd8f5c;
+    --copper: #b0765d;
+    --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   }
-  /* Committed dark HUD — one world, both toggle states */
   :root[data-theme="light"] body, :root[data-theme="dark"] body, body {
     background: var(--bg);
     color: var(--text);
@@ -31,164 +26,148 @@
   * { box-sizing: border-box; }
   body {
     margin: 0;
-    font-family: var(--body);
-    font-size: 15px;
-    line-height: 1.5;
-    background-image:
-      linear-gradient(180deg, rgba(241,143,44,0.05) 0%, rgba(241,143,44,0) 340px),
-      repeating-linear-gradient(0deg, rgba(255,255,255,0.012) 0 1px, transparent 1px 3px);
+    font-family: var(--sans);
+    font-size: 16px;
+    line-height: 1.55;
+    background-image: radial-gradient(900px 420px at 50% -120px, rgba(242,193,78,0.07), transparent 70%);
     min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
   }
-  .wrap { max-width: 1160px; margin: 0 auto; padding: 28px 20px 80px; }
+  .wrap { max-width: 1160px; margin: 0 auto; padding: 44px 22px 90px; }
 
   /* ---------- header ---------- */
-  .topline {
-    display: flex; align-items: center; gap: 12px;
-    font-family: var(--display);
-    text-transform: uppercase; letter-spacing: 0.22em;
-    font-size: 12px; color: var(--faint);
-  }
-  .topline::before, .topline::after {
-    content: ""; height: 1px; background: var(--line); flex: 1;
+  .overline {
+    text-align: center;
+    font-size: 12.5px; font-weight: 600;
+    letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--faint); margin: 0;
   }
   header h1 {
-    font-family: var(--display);
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-    font-size: clamp(38px, 7vw, 64px);
-    line-height: 1;
-    margin: 18px 0 6px;
-    text-align: center;
-    text-wrap: balance;
+    font-size: clamp(32px, 5.5vw, 46px);
+    font-weight: 800; letter-spacing: -0.02em;
+    text-align: center; line-height: 1.15;
+    margin: 8px 0 6px; text-wrap: balance;
   }
-  header h1 .amp { color: var(--accent); }
-  .sub {
-    text-align: center; color: var(--muted); margin: 0;
-    font-size: 14px;
-  }
+  .sub { text-align: center; color: var(--muted); margin: 0; font-size: 15px; }
   .meta-row {
-    display: flex; justify-content: center; gap: 22px; margin-top: 14px;
-    font-family: var(--mono); font-size: 11.5px; color: var(--faint);
-    text-transform: uppercase; letter-spacing: 0.08em;
-    flex-wrap: wrap;
+    display: flex; justify-content: center; gap: 8px 18px; margin-top: 14px;
+    font-size: 13px; color: var(--faint); flex-wrap: wrap;
+    font-variant-numeric: tabular-nums;
   }
+  .meta-row b { color: var(--muted); font-weight: 600; }
   .meta-row .dot { color: var(--accent); }
 
   /* ---------- title cards ---------- */
   .titles {
-    display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px;
-    margin-top: 34px;
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px;
+    margin-top: 36px;
   }
   @media (max-width: 720px) { .titles { grid-template-columns: 1fr; } }
   .title-card {
-    background: var(--panel);
+    background: var(--card);
     border: 1px solid var(--line);
-    clip-path: polygon(16px 0, 100% 0, 100% calc(100% - 16px), calc(100% - 16px) 100%, 0 100%, 0 16px);
-    padding: 18px 20px 20px;
-    position: relative;
+    border-radius: 16px;
+    padding: 20px 22px;
   }
   .title-card .label {
-    font-family: var(--display); text-transform: uppercase;
-    letter-spacing: 0.18em; font-size: 11.5px; color: var(--faint);
-    display: flex; align-items: center; gap: 8px;
+    font-size: 12px; font-weight: 600; letter-spacing: 0.1em;
+    text-transform: uppercase; color: var(--faint);
   }
-  .title-card .label::after { content: ""; flex: 1; height: 1px; background: var(--line); }
   .title-card .who {
-    font-family: var(--display); font-weight: 700; text-transform: uppercase;
-    font-size: 30px; letter-spacing: 0.03em; margin-top: 10px; line-height: 1.05;
+    font-size: 26px; font-weight: 800; letter-spacing: -0.01em;
+    margin-top: 8px; line-height: 1.15; overflow-wrap: anywhere;
   }
-  .title-card .stat {
-    font-family: var(--mono); font-size: 14px; margin-top: 6px; color: var(--muted);
-  }
-  .title-card .stat b { color: var(--text); font-weight: 600; }
-  .title-card.rank .who { color: var(--diamond); }
-  .title-card.kd .who { color: var(--accent); }
-  .title-card.wr .who { color: var(--emerald); }
+  .title-card .stat { font-size: 14px; margin-top: 4px; color: var(--muted); font-variant-numeric: tabular-nums; }
+  .title-card .stat b { color: var(--text); font-weight: 650; }
 
   /* ---------- view tabs ---------- */
   .tabs {
-    display: flex; gap: 8px; margin: 44px 0 0; flex-wrap: wrap;
+    display: inline-flex; gap: 4px; margin: 42px 0 0;
+    background: var(--card); border: 1px solid var(--line);
+    border-radius: 999px; padding: 4px;
+    flex-wrap: wrap;
   }
   .tab {
-    font-family: var(--display); text-transform: uppercase; letter-spacing: 0.12em;
-    font-size: 12.5px; font-weight: 600;
-    color: var(--faint); background: var(--panel);
-    border: 1px solid var(--line);
-    clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px);
-    padding: 9px 18px; cursor: pointer;
+    font-family: var(--sans);
+    font-size: 14px; font-weight: 600;
+    color: var(--muted); background: transparent;
+    border: none; border-radius: 999px;
+    padding: 8px 18px; cursor: pointer;
   }
   .tab:hover { color: var(--text); }
-  .tab.active {
-    color: #0b0f15; background: var(--accent); border-color: var(--accent);
-  }
+  .tab.active { color: #17181c; background: var(--accent); }
+
   section h2 {
-    font-family: var(--display); text-transform: uppercase; letter-spacing: 0.14em;
-    font-size: 15px; color: var(--muted); font-weight: 600;
-    display: flex; align-items: center; gap: 12px;
-    margin: 16px 0 14px;
+    display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap;
+    font-size: 18px; font-weight: 700; letter-spacing: -0.01em;
+    color: var(--text); margin: 22px 0 12px;
   }
-  section h2::after { content: ""; flex: 1; height: 1px; background: var(--line); }
-  .hint { font-size: 12px; color: var(--faint); font-family: var(--body); text-transform: none; letter-spacing: 0; }
+  .hint { font-size: 13px; font-weight: 400; color: var(--faint); }
 
   /* ---------- table ---------- */
-  .table-scroll { overflow-x: auto; border: 1px solid var(--line); background: var(--bg-raise); }
-  table { border-collapse: collapse; width: 100%; min-width: 900px; }
+  .table-scroll {
+    overflow-x: auto;
+    border: 1px solid var(--line); border-radius: 16px;
+    background: var(--card);
+  }
+  table { border-collapse: collapse; width: 100%; min-width: 940px; }
   thead th {
-    font-family: var(--display); text-transform: uppercase; letter-spacing: 0.1em;
-    font-size: 11px; font-weight: 600; color: var(--faint);
-    text-align: right; padding: 12px 12px;
+    font-size: 12.5px; font-weight: 600; letter-spacing: 0.05em;
+    text-transform: uppercase; color: var(--faint);
+    text-align: right; padding: 14px 14px;
     border-bottom: 1px solid var(--line);
     cursor: pointer; user-select: none; white-space: nowrap;
   }
   thead th:first-child, thead th:nth-child(2) { text-align: left; }
-  thead th:hover { color: var(--accent); }
-  thead th .arrow { color: var(--accent); font-family: var(--mono); }
+  thead th:hover { color: var(--text); }
+  thead th .arrow { color: var(--accent); }
   tbody td {
-    padding: 13px 12px; text-align: right;
-    font-family: var(--mono); font-size: 13px; font-variant-numeric: tabular-nums;
-    border-bottom: 1px solid rgba(35,46,62,0.5);
+    padding: 15px 14px; text-align: right;
+    font-size: 14.5px; font-variant-numeric: tabular-nums;
+    color: var(--text);
+    border-bottom: 1px solid rgba(43,47,56,0.6);
     white-space: nowrap;
   }
   tbody tr:last-child td { border-bottom: none; }
-  tbody tr:hover { background: var(--panel-hi); }
-  td.pos { text-align: left; color: var(--faint); width: 40px; }
-  td.player { text-align: left; font-family: var(--display); font-size: 17px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; }
+  tbody tr:hover td { background: var(--card-hi); }
+  td.pos { text-align: left; color: var(--faint); width: 44px; }
+  td.player { text-align: left; font-size: 15.5px; font-weight: 700; letter-spacing: -0.01em; }
   .plat-chip {
-    display: inline-block; margin-left: 8px; padding: 1px 6px;
-    font-family: var(--mono); font-size: 9.5px; letter-spacing: 0.1em;
-    color: var(--faint); border: 1px solid var(--line); vertical-align: 2px;
+    display: inline-block; margin-left: 8px; padding: 2px 8px;
+    font-size: 10.5px; font-weight: 600; letter-spacing: 0.08em;
+    color: var(--muted); background: var(--card-hi);
+    border: 1px solid var(--line); border-radius: 999px;
+    vertical-align: 2px;
   }
   .rank-pill {
-    display: inline-flex; align-items: center; gap: 7px;
-    font-family: var(--display); font-size: 13px; font-weight: 600;
-    text-transform: uppercase; letter-spacing: 0.06em;
+    display: inline-flex; align-items: center; gap: 8px;
+    font-size: 14px; font-weight: 700;
   }
   .rank-pill .tier-mark {
-    width: 10px; height: 10px; display: inline-block;
-    clip-path: polygon(50% 0, 100% 50%, 50% 100%, 0 50%);
+    width: 9px; height: 9px; display: inline-block; border-radius: 2px;
+    transform: rotate(45deg);
   }
-  .best { color: var(--gold); }
-  .best::after { content: " ▮"; color: var(--accent); font-size: 9px; vertical-align: 2px; }
+  .best { color: var(--gold); font-weight: 700; }
+  .best::after { content: " ★"; font-size: 10.5px; vertical-align: 1px; }
 
   footer {
-    margin-top: 40px; text-align: center;
-    font-family: var(--mono); font-size: 11.5px; color: var(--faint);
-    text-transform: uppercase; letter-spacing: 0.1em;
+    margin-top: 44px; text-align: center;
+    font-size: 13px; color: var(--faint);
   }
   footer .sep { color: var(--accent); margin: 0 8px; }
   @media (prefers-reduced-motion: no-preference) {
     .title-card { transition: border-color 0.15s ease; }
-    .title-card:hover { border-color: var(--accent-dim); }
+    .title-card:hover { border-color: #3a3f4a; }
     .tab { transition: color 0.12s ease, background 0.12s ease; }
+    tbody td { transition: background 0.1s ease; }
   }
 </style>
 
 <div class="wrap">
   <header>
-    <p class="topline">Ranked 2.0 · Squad Intel</p>
-    <h1>Squad <span class="amp">//</span> Leaderboard</h1>
-    <p class="sub">Rainbow Six Siege — the boys, settled with numbers.</p>
+    <p class="overline">Rainbow Six Siege</p>
+    <h1>Squad Leaderboard</h1>
+    <p class="sub">The boys, settled with numbers.</p>
     <div class="meta-row">
       <span>Season <b id="season">—</b></span>
       <span class="dot">◆</span>
@@ -229,7 +208,7 @@
   </section>
 
   <footer>
-    Private board <span class="sep">/</span> stats via Ubisoft ranked data <span class="sep">/</span> bragging rights non-refundable
+    Private board <span class="sep">·</span> stats via Ubisoft ranked data <span class="sep">·</span> bragging rights non-refundable
   </footer>
 </div>
 
@@ -344,7 +323,7 @@ const TAB_LABELS = { season: "Season Ranked", ranked: "Lifetime Ranked", overall
 // header + title cards (always season-based)
 document.getElementById("updated").textContent = UPDATED;
 document.getElementById("season").textContent = SEASON;
-document.getElementById("playerCount").textContent = PLAYERS.length + " operators tracked";
+document.getElementById("playerCount").textContent = PLAYERS.length + " players tracked";
 
 const topBy = fn => PLAYERS.reduce((a, b) => (fn(b) > fn(a) ? b : a));
 const bestRank = topBy(p => p.season.rp), bestKd = topBy(p => p.season.kd), bestWr = topBy(p => p.season.winrate);

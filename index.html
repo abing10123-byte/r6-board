@@ -1,0 +1,441 @@
+<title>R6 Squad Leaderboard</title>
+<style>
+  :root {
+    --bg: #0b0f15;
+    --bg-raise: #10151e;
+    --panel: #151c27;
+    --panel-hi: #1b2431;
+    --line: #232e3e;
+    --text: #e6ebf2;
+    --muted: #93a0b4;
+    --faint: #5c6a7e;
+    --accent: #f18f2c;
+    --accent-dim: #b96c1e;
+    --gold: #e7b93c;
+    --emerald: #3ecf8e;
+    --diamond: #a98ff7;
+    --champion: #e5484d;
+    --plat: #35c2c9;
+    --silver: #aab4c0;
+    --bronze: #c9885a;
+    --copper: #9a5b46;
+    --display: "Avenir Next Condensed", "Arial Narrow", "Helvetica Neue", sans-serif;
+    --body: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    --mono: ui-monospace, "SF Mono", "Cascadia Mono", Menlo, monospace;
+  }
+  /* Committed dark HUD — one world, both toggle states */
+  :root[data-theme="light"] body, :root[data-theme="dark"] body, body {
+    background: var(--bg);
+    color: var(--text);
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: var(--body);
+    font-size: 15px;
+    line-height: 1.5;
+    background-image:
+      linear-gradient(180deg, rgba(241,143,44,0.05) 0%, rgba(241,143,44,0) 340px),
+      repeating-linear-gradient(0deg, rgba(255,255,255,0.012) 0 1px, transparent 1px 3px);
+    min-height: 100vh;
+  }
+  .wrap { max-width: 1160px; margin: 0 auto; padding: 28px 20px 80px; }
+
+  /* ---------- header ---------- */
+  .topline {
+    display: flex; align-items: center; gap: 12px;
+    font-family: var(--display);
+    text-transform: uppercase; letter-spacing: 0.22em;
+    font-size: 12px; color: var(--faint);
+  }
+  .topline::before, .topline::after {
+    content: ""; height: 1px; background: var(--line); flex: 1;
+  }
+  header h1 {
+    font-family: var(--display);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    font-size: clamp(38px, 7vw, 64px);
+    line-height: 1;
+    margin: 18px 0 6px;
+    text-align: center;
+    text-wrap: balance;
+  }
+  header h1 .amp { color: var(--accent); }
+  .sub {
+    text-align: center; color: var(--muted); margin: 0;
+    font-size: 14px;
+  }
+  .meta-row {
+    display: flex; justify-content: center; gap: 22px; margin-top: 14px;
+    font-family: var(--mono); font-size: 11.5px; color: var(--faint);
+    text-transform: uppercase; letter-spacing: 0.08em;
+    flex-wrap: wrap;
+  }
+  .meta-row .dot { color: var(--accent); }
+
+  /* ---------- title cards ---------- */
+  .titles {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px;
+    margin-top: 34px;
+  }
+  @media (max-width: 720px) { .titles { grid-template-columns: 1fr; } }
+  .title-card {
+    background: var(--panel);
+    border: 1px solid var(--line);
+    clip-path: polygon(16px 0, 100% 0, 100% calc(100% - 16px), calc(100% - 16px) 100%, 0 100%, 0 16px);
+    padding: 18px 20px 20px;
+    position: relative;
+  }
+  .title-card .label {
+    font-family: var(--display); text-transform: uppercase;
+    letter-spacing: 0.18em; font-size: 11.5px; color: var(--faint);
+    display: flex; align-items: center; gap: 8px;
+  }
+  .title-card .label::after { content: ""; flex: 1; height: 1px; background: var(--line); }
+  .title-card .who {
+    font-family: var(--display); font-weight: 700; text-transform: uppercase;
+    font-size: 30px; letter-spacing: 0.03em; margin-top: 10px; line-height: 1.05;
+  }
+  .title-card .stat {
+    font-family: var(--mono); font-size: 14px; margin-top: 6px; color: var(--muted);
+  }
+  .title-card .stat b { color: var(--text); font-weight: 600; }
+  .title-card.rank .who { color: var(--diamond); }
+  .title-card.kd .who { color: var(--accent); }
+  .title-card.wr .who { color: var(--emerald); }
+
+  /* ---------- view tabs ---------- */
+  .tabs {
+    display: flex; gap: 8px; margin: 44px 0 0; flex-wrap: wrap;
+  }
+  .tab {
+    font-family: var(--display); text-transform: uppercase; letter-spacing: 0.12em;
+    font-size: 12.5px; font-weight: 600;
+    color: var(--faint); background: var(--panel);
+    border: 1px solid var(--line);
+    clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px);
+    padding: 9px 18px; cursor: pointer;
+  }
+  .tab:hover { color: var(--text); }
+  .tab.active {
+    color: #0b0f15; background: var(--accent); border-color: var(--accent);
+  }
+  section h2 {
+    font-family: var(--display); text-transform: uppercase; letter-spacing: 0.14em;
+    font-size: 15px; color: var(--muted); font-weight: 600;
+    display: flex; align-items: center; gap: 12px;
+    margin: 16px 0 14px;
+  }
+  section h2::after { content: ""; flex: 1; height: 1px; background: var(--line); }
+  .hint { font-size: 12px; color: var(--faint); font-family: var(--body); text-transform: none; letter-spacing: 0; }
+
+  /* ---------- table ---------- */
+  .table-scroll { overflow-x: auto; border: 1px solid var(--line); background: var(--bg-raise); }
+  table { border-collapse: collapse; width: 100%; min-width: 900px; }
+  thead th {
+    font-family: var(--display); text-transform: uppercase; letter-spacing: 0.1em;
+    font-size: 11px; font-weight: 600; color: var(--faint);
+    text-align: right; padding: 12px 12px;
+    border-bottom: 1px solid var(--line);
+    cursor: pointer; user-select: none; white-space: nowrap;
+  }
+  thead th:first-child, thead th:nth-child(2) { text-align: left; }
+  thead th:hover { color: var(--accent); }
+  thead th .arrow { color: var(--accent); font-family: var(--mono); }
+  tbody td {
+    padding: 13px 12px; text-align: right;
+    font-family: var(--mono); font-size: 13px; font-variant-numeric: tabular-nums;
+    border-bottom: 1px solid rgba(35,46,62,0.5);
+    white-space: nowrap;
+  }
+  tbody tr:last-child td { border-bottom: none; }
+  tbody tr:hover { background: var(--panel-hi); }
+  td.pos { text-align: left; color: var(--faint); width: 40px; }
+  td.player { text-align: left; font-family: var(--display); font-size: 17px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; }
+  .plat-chip {
+    display: inline-block; margin-left: 8px; padding: 1px 6px;
+    font-family: var(--mono); font-size: 9.5px; letter-spacing: 0.1em;
+    color: var(--faint); border: 1px solid var(--line); vertical-align: 2px;
+  }
+  .rank-pill {
+    display: inline-flex; align-items: center; gap: 7px;
+    font-family: var(--display); font-size: 13px; font-weight: 600;
+    text-transform: uppercase; letter-spacing: 0.06em;
+  }
+  .rank-pill .tier-mark {
+    width: 10px; height: 10px; display: inline-block;
+    clip-path: polygon(50% 0, 100% 50%, 50% 100%, 0 50%);
+  }
+  .best { color: var(--gold); }
+  .best::after { content: " ▮"; color: var(--accent); font-size: 9px; vertical-align: 2px; }
+
+  footer {
+    margin-top: 40px; text-align: center;
+    font-family: var(--mono); font-size: 11.5px; color: var(--faint);
+    text-transform: uppercase; letter-spacing: 0.1em;
+  }
+  footer .sep { color: var(--accent); margin: 0 8px; }
+  @media (prefers-reduced-motion: no-preference) {
+    .title-card { transition: border-color 0.15s ease; }
+    .title-card:hover { border-color: var(--accent-dim); }
+    .tab { transition: color 0.12s ease, background 0.12s ease; }
+  }
+</style>
+
+<div class="wrap">
+  <header>
+    <p class="topline">Ranked 2.0 · Squad Intel</p>
+    <h1>Squad <span class="amp">//</span> Leaderboard</h1>
+    <p class="sub">Rainbow Six Siege — the boys, settled with numbers.</p>
+    <div class="meta-row">
+      <span>Season <b id="season">—</b></span>
+      <span class="dot">◆</span>
+      <span>Updated <b id="updated">—</b></span>
+      <span class="dot">◆</span>
+      <span id="playerCount">—</span>
+    </div>
+  </header>
+
+  <div class="titles">
+    <div class="title-card rank">
+      <div class="label">Highest Rank</div>
+      <div class="who" id="bestRankName">—</div>
+      <div class="stat" id="bestRankStat">—</div>
+    </div>
+    <div class="title-card kd">
+      <div class="label">Top K/D</div>
+      <div class="who" id="bestKdName">—</div>
+      <div class="stat" id="bestKdStat">—</div>
+    </div>
+    <div class="title-card wr">
+      <div class="label">Top Win Rate</div>
+      <div class="who" id="bestWrName">—</div>
+      <div class="stat" id="bestWrStat">—</div>
+    </div>
+  </div>
+
+  <div class="tabs" id="tabs"></div>
+
+  <section>
+    <h2 id="viewTitle">Season ranked <span class="hint">click a column to sort</span></h2>
+    <div class="table-scroll">
+      <table id="board">
+        <thead><tr></tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </section>
+
+  <footer>
+    Private board <span class="sep">/</span> stats via Ubisoft ranked data <span class="sep">/</span> bragging rights non-refundable
+  </footer>
+</div>
+
+<script>
+// ── DATA ─────────────────────────────────────────────────────────────
+// Pulled from R6 Tracker profiles. season = Y11S2 (System Override) ranked;
+// ranked = lifetime ranked; overall = lifetime all playlists.
+const UPDATED = "Jul 8, 2026";
+const SEASON = "Y11S2 · System Override";
+
+const PLAYERS = [
+  { name: "Prawn1234", plat: "PC",
+    season: { rank: "Silver 2", rp: 2340, peak: 2549, wins: 43, losses: 48, winrate: 47.3, kd: 1.22, kda: 1.60, kills: 512, deaths: 421, hs: 51.6, aces: 1, clutches: 15, clutchPct: 24.6, esr: 0.61, abandons: 0 },
+    ranked: { matches: 1234, wins: 616, losses: 399, winrate: 49.9, kd: 1.00, kills: 5408, deaths: 5429, kpm: 4.38, abandons: 8 },
+    overall: { level: 260, hours: 548, matches: 2661, wins: 1344, losses: 1245, winrate: 50.5, kd: 1.07, hs: 44.2, kills: 10884, deaths: 10161, kpm: 4.09, abandons: 66 } },
+  { name: "preludexx", plat: "PC",
+    season: { rank: "Silver 3", rp: 2226, peak: 2252, wins: 45, losses: 40, winrate: 52.9, kd: 1.17, kda: 1.43, kills: 433, deaths: 369, hs: 59.6, aces: 4, clutches: 12, clutchPct: 20.3, esr: 0.54, abandons: 0 },
+    ranked: { matches: 85, wins: 45, losses: 40, winrate: 52.9, kd: 1.17, kills: 433, deaths: 369, kpm: 5.09, abandons: 0 },
+    overall: { level: 74, hours: 117, matches: 209, wins: 103, losses: 93, winrate: 49.3, kd: 1.08, hs: 54.5, kills: 858, deaths: 796, kpm: 4.11, abandons: 13 } },
+  { name: "bennyxswish", plat: "PC",
+    season: { rank: "Silver 4", rp: 2150, peak: 2175, wins: 110, losses: 95, winrate: 53.7, kd: 1.09, kda: 1.39, kills: 951, deaths: 871, hs: 49.5, aces: 5, clutches: 36, clutchPct: 28.4, esr: 0.45, abandons: 0 },
+    ranked: { matches: 451, wins: 226, losses: 223, winrate: 50.1, kd: 1.01, kills: 1931, deaths: 1905, kpm: 4.28, abandons: 2 },
+    overall: { level: 137, hours: 308, matches: 702, wins: 345, losses: 336, winrate: 49.1, kd: 0.97, hs: 42.8, kills: 2698, deaths: 2788, kpm: 3.84, abandons: 21 } },
+  { name: "GymPiggy", plat: "PC",
+    season: { rank: "Silver 5", rp: 2034, peak: 2058, wins: 93, losses: 70, winrate: 57.1, kd: 1.07, kda: 1.44, kills: 713, deaths: 664, hs: 40.0, aces: 1, clutches: 20, clutchPct: 17.5, esr: 0.48, abandons: 0 },
+    ranked: { matches: 308, wins: 158, losses: 147, winrate: 51.3, kd: 0.95, kills: 1244, deaths: 1314, kpm: 4.04, abandons: 3 },
+    overall: { level: 111, hours: 197, matches: 466, wins: 226, losses: 218, winrate: 48.5, kd: 0.93, hs: 36.4, kills: 1753, deaths: 1892, kpm: 3.76, abandons: 22 } },
+  { name: "Abinboi", plat: "PC",
+    season: { rank: "Bronze 1", rp: 1956, peak: 1979, wins: 98, losses: 68, winrate: 59.0, kd: 1.03, kda: 1.39, kills: 746, deaths: 722, hs: 52.9, aces: 1, clutches: 18, clutchPct: 26.1, esr: 0.44, abandons: 0 },
+    ranked: { matches: 378, wins: 189, losses: 189, winrate: 50.0, kd: 0.89, kills: 1547, deaths: 1733, kpm: 4.09, abandons: 0 },
+    overall: { level: 129, hours: 322, matches: 646, wins: 327, losses: 309, winrate: 50.6, kd: 0.92, hs: 41.0, kills: 2491, deaths: 2711, kpm: 3.86, abandons: 10 } },
+  { name: "cancerous_CURRY", plat: "PS",
+    season: { rank: "Bronze 3", rp: 1723, peak: 1952, wins: 6, losses: 13, winrate: 31.6, kd: 0.61, kda: 0.84, kills: 47, deaths: 77, hs: 40.4, aces: 0, clutches: 2, clutchPct: 18.2, esr: 0.33, abandons: 0 },
+    ranked: { matches: 19, wins: 6, losses: 13, winrate: 31.6, kd: 0.61, kills: 47, deaths: 77, kpm: 2.47, abandons: 0 },
+    overall: { level: 69, hours: 72, matches: 93, wins: 41, losses: 45, winrate: 44.1, kd: 0.80, hs: 36.9, kills: 234, deaths: 291, kpm: 2.52, abandons: 7 } },
+  { name: "MegaGBez", plat: "PS",
+    season: { rank: "Copper 5", rp: 1039, peak: 1116, wins: 9, losses: 16, winrate: 36.0, kd: 0.16, kda: 0.31, kills: 21, deaths: 129, hs: 33.3, aces: 0, clutches: 0, clutchPct: 0.0, esr: 0.07, abandons: 0 },
+    ranked: { matches: 75, wins: 19, losses: 53, winrate: 25.3, kd: 0.17, kills: 63, deaths: 379, kpm: 0.84, abandons: 3 },
+    overall: { level: 76, hours: 87, matches: 242, wins: 92, losses: 136, winrate: 38.0, kd: 0.25, hs: 30.9, kills: 286, deaths: 1125, kpm: 1.18, abandons: 14 } },
+];
+// ─────────────────────────────────────────────────────────────────────
+
+const TIER_COLORS = {
+  copper: "var(--copper)", bronze: "var(--bronze)", silver: "var(--silver)",
+  gold: "var(--gold)", platinum: "var(--plat)", emerald: "var(--emerald)",
+  diamond: "var(--diamond)", champion: "var(--champion)",
+};
+const tierColor = rank => TIER_COLORS[rank.split(" ")[0].toLowerCase()] || "var(--muted)";
+PLAYERS.forEach(p => {
+  const s = p.season;
+  s.matches = s.wins + s.losses;
+  s.kpm = s.matches ? +(s.kills / s.matches).toFixed(2) : 0;
+});
+
+const fmtInt = v => v.toLocaleString();
+const fmt1 = v => v.toFixed(1);
+const fmt2 = v => v.toFixed(2);
+const pct = v => v.toFixed(1) + "%";
+
+// Column defs per view. best:"max" = highlight the highest value.
+const VIEWS = {
+  season: {
+    title: "Season ranked — " + SEASON,
+    cols: [
+      { key: "rp", label: "Rank", best: "max", html: p => '<span class="rank-pill" style="color:' + tierColor(p.season.rank) + '"><span class="tier-mark" style="background:' + tierColor(p.season.rank) + '"></span>' + p.season.rank + " · " + fmtInt(p.season.rp) + "</span>", val: p => p.season.rp },
+      { key: "peak", label: "Peak RP", best: "max", val: p => p.season.peak, fmt: fmtInt },
+      { key: "wl", label: "W–L", best: "max", val: p => p.season.wins, fmt: (v, p) => p.season.wins + "–" + p.season.losses },
+      { key: "winrate", label: "Win %", best: "max", val: p => p.season.winrate, fmt: pct },
+      { key: "kd", label: "K/D", best: "max", val: p => p.season.kd, fmt: fmt2 },
+      { key: "kda", label: "KDA", best: "max", val: p => p.season.kda, fmt: fmt2 },
+      { key: "kills", label: "Kills", best: "max", val: p => p.season.kills, fmt: fmtInt },
+      { key: "deaths", label: "Deaths", val: p => p.season.deaths, fmt: fmtInt },
+      { key: "hs", label: "HS %", best: "max", val: p => p.season.hs, fmt: pct },
+      { key: "aces", label: "Aces", best: "max", val: p => p.season.aces },
+      { key: "clutches", label: "Clutches", best: "max", val: p => p.season.clutches, fmt: (v, p) => v + " (" + fmt1(p.season.clutchPct) + "%)" },
+      { key: "esr", label: "ESR", best: "max", val: p => p.season.esr, fmt: fmt2 },
+      { key: "kpm", label: "K/Match", best: "max", val: p => p.season.kpm, fmt: fmt2 },
+    ],
+  },
+  ranked: {
+    title: "Lifetime ranked",
+    cols: [
+      { key: "matches", label: "Matches", best: "max", val: p => p.ranked.matches, fmt: fmtInt },
+      { key: "wl", label: "W–L", best: "max", val: p => p.ranked.wins, fmt: (v, p) => p.ranked.wins + "–" + p.ranked.losses },
+      { key: "winrate", label: "Win %", best: "max", val: p => p.ranked.winrate, fmt: pct },
+      { key: "kd", label: "K/D", best: "max", val: p => p.ranked.kd, fmt: fmt2 },
+      { key: "kills", label: "Kills", best: "max", val: p => p.ranked.kills, fmt: fmtInt },
+      { key: "deaths", label: "Deaths", val: p => p.ranked.deaths, fmt: fmtInt },
+      { key: "kpm", label: "K/Match", best: "max", val: p => p.ranked.kpm, fmt: fmt2 },
+      { key: "abandons", label: "Abandons", val: p => p.ranked.abandons },
+    ],
+  },
+  overall: {
+    title: "Lifetime overall — all playlists",
+    cols: [
+      { key: "level", label: "Level", best: "max", val: p => p.overall.level, fmt: fmtInt },
+      { key: "hours", label: "Time", val: p => p.overall.hours, fmt: v => v + "h" },
+      { key: "matches", label: "Matches", best: "max", val: p => p.overall.matches, fmt: fmtInt },
+      { key: "wl", label: "W–L", best: "max", val: p => p.overall.wins, fmt: (v, p) => fmtInt(p.overall.wins) + "–" + fmtInt(p.overall.losses) },
+      { key: "winrate", label: "Win %", best: "max", val: p => p.overall.winrate, fmt: pct },
+      { key: "kd", label: "K/D", best: "max", val: p => p.overall.kd, fmt: fmt2 },
+      { key: "hs", label: "HS %", best: "max", val: p => p.overall.hs, fmt: pct },
+      { key: "kills", label: "Kills", best: "max", val: p => p.overall.kills, fmt: fmtInt },
+      { key: "deaths", label: "Deaths", val: p => p.overall.deaths, fmt: fmtInt },
+      { key: "kpm", label: "K/Match", best: "max", val: p => p.overall.kpm, fmt: fmt2 },
+      { key: "abandons", label: "Abandons", val: p => p.overall.abandons },
+    ],
+  },
+};
+const TAB_LABELS = { season: "Season Ranked", ranked: "Lifetime Ranked", overall: "Lifetime Overall" };
+
+// header + title cards (always season-based)
+document.getElementById("updated").textContent = UPDATED;
+document.getElementById("season").textContent = SEASON;
+document.getElementById("playerCount").textContent = PLAYERS.length + " operators tracked";
+
+const topBy = fn => PLAYERS.reduce((a, b) => (fn(b) > fn(a) ? b : a));
+const bestRank = topBy(p => p.season.rp), bestKd = topBy(p => p.season.kd), bestWr = topBy(p => p.season.winrate);
+document.getElementById("bestRankName").textContent = bestRank.name;
+document.getElementById("bestRankName").style.color = tierColor(bestRank.season.rank);
+document.getElementById("bestRankStat").innerHTML = "<b>" + bestRank.season.rank + "</b> · " + fmtInt(bestRank.season.rp) + " RP";
+document.getElementById("bestKdName").textContent = bestKd.name;
+document.getElementById("bestKdStat").innerHTML = "<b>" + fmt2(bestKd.season.kd) + "</b> K/D · " + fmtInt(bestKd.season.kills) + " kills";
+document.getElementById("bestWrName").textContent = bestWr.name;
+document.getElementById("bestWrStat").innerHTML = "<b>" + pct(bestWr.season.winrate) + "</b> over " + bestWr.season.matches + " matches";
+
+let view = "season", sortKey = "rp", sortDir = -1;
+
+function renderTabs() {
+  const tabs = document.getElementById("tabs");
+  tabs.innerHTML = "";
+  Object.keys(VIEWS).forEach(v => {
+    const b = document.createElement("button");
+    b.className = "tab" + (v === view ? " active" : "");
+    b.textContent = TAB_LABELS[v];
+    b.addEventListener("click", () => {
+      view = v;
+      sortKey = VIEWS[v].cols[0].key;
+      sortDir = -1;
+      renderTabs(); render();
+    });
+    tabs.appendChild(b);
+  });
+}
+
+function render() {
+  const cfg = VIEWS[view];
+  document.getElementById("viewTitle").innerHTML = cfg.title + ' <span class="hint">click a column to sort</span>';
+
+  const headRow = document.querySelector("#board thead tr");
+  headRow.innerHTML = "";
+  const thPos = document.createElement("th"); thPos.textContent = "#";
+  const thName = document.createElement("th"); thName.textContent = "Player"; thName.dataset.key = "name";
+  headRow.append(thPos, thName);
+  cfg.cols.forEach(c => {
+    const th = document.createElement("th");
+    th.dataset.key = c.key;
+    th.innerHTML = c.key === sortKey ? c.label + ' <span class="arrow">' + (sortDir < 0 ? "▼" : "▲") + "</span>" : c.label;
+    headRow.appendChild(th);
+  });
+  if (sortKey === "name") thName.innerHTML = 'Player <span class="arrow">' + (sortDir < 0 ? "▼" : "▲") + "</span>";
+  headRow.querySelectorAll("th").forEach(th => {
+    const key = th.dataset.key;
+    if (!key) return;
+    th.addEventListener("click", () => {
+      if (sortKey === key) sortDir *= -1;
+      else { sortKey = key; sortDir = key === "name" ? 1 : -1; }
+      render();
+    });
+  });
+
+  const getVal = p => {
+    if (sortKey === "name") return p.name.toLowerCase();
+    const col = cfg.cols.find(c => c.key === sortKey);
+    return col ? col.val(p) : 0;
+  };
+  const rows = [...PLAYERS].sort((a, b) => {
+    const va = getVal(a), vb = getVal(b);
+    return (typeof va === "string" ? va.localeCompare(vb) : va - vb) * sortDir;
+  });
+
+  const bests = {};
+  cfg.cols.forEach(c => { if (c.best === "max") bests[c.key] = Math.max(...PLAYERS.map(c.val)); });
+
+  const tbody = document.querySelector("#board tbody");
+  tbody.innerHTML = "";
+  rows.forEach((p, i) => {
+    const tr = document.createElement("tr");
+    const posTd = document.createElement("td");
+    posTd.className = "pos"; posTd.textContent = String(i + 1).padStart(2, "0");
+    const nameTd = document.createElement("td");
+    nameTd.className = "player";
+    nameTd.innerHTML = p.name + '<span class="plat-chip">' + p.plat + "</span>";
+    tr.append(posTd, nameTd);
+    cfg.cols.forEach(c => {
+      const td = document.createElement("td");
+      const raw = c.val(p);
+      if (c.html) td.innerHTML = c.html(p);
+      else td.textContent = c.fmt ? c.fmt(raw, p) : String(raw);
+      if (bests[c.key] !== undefined && raw === bests[c.key]) td.classList.add("best");
+      tr.appendChild(td);
+    });
+    tbody.appendChild(tr);
+  });
+}
+
+renderTabs();
+render();
+</script>
